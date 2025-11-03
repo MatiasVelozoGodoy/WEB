@@ -1,0 +1,38 @@
+.dashboardLayout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+.mainContent {
+  flex: 1;
+  margin-left: 20px;
+  padding: 2rem;
+  overflow-x: hidden;
+}
+@media (max-width: 1024px) { .mainContent { padding: 0.5rem; } }
+@media (max-width: 768px) { .mainContent { margin-left: 0; padding: 1.25rem; } }
+@media (max-width: 480px) { .mainContent { padding: 1rem; } }
+
+.pageHeader {
+  display: grid;
+  gap: .4rem;
+  margin-bottom: 1rem;
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  color: #9aa4b2;
+  font-size: .95rem;
+}
+
+.pageTitle {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  line-height: 1.2;
+  color: var(--color-secondary);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}

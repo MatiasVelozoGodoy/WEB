@@ -1,0 +1,269 @@
+
+.wrap {
+  padding: clamp(1rem, 3vw, 2rem);
+  max-width: min(1200px, 100%);
+  margin: 0 auto;
+  animation: fadeIn .4s ease;
+}
+
+@keyframes fadeIn { from {opacity: 0; transform: translateY(8px);} to {opacity: 1; transform: translateY(0);} }
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.headerContent h1 {
+  font-size: clamp(1.4rem, 3.5vw, 2rem);
+  line-height: 1.2;
+  margin: 0 0 .35rem 0;
+  background: var(--color-secondary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subtitle { color: var(--color-silver, #64748b); font-size: .95rem; }
+
+.headerActions { display: flex; gap: .5rem; }
+
+.addBtn,
+.addSmallBtn,
+.addEntryBtn {
+  border: 0;
+  border-radius: 10px;
+  padding: .6rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(102,126,234,.25);
+  transition: transform .15s ease, box-shadow .2s ease;
+}
+.addBtn:hover,
+.addSmallBtn:hover,
+.addEntryBtn:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(102,126,234,.28); }
+
+.addSmallBtn,
+.addEntryBtn { padding: .45rem .8rem; border-radius: 8px; }
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--color-gray, #e5e7eb);
+  box-shadow: var(--shadow-sm, 0 4px 12px rgba(0,0,0,.06));
+}
+
+.statIcon {
+  width: clamp(44px, 6vw, 52px);
+  height: clamp(44px, 6vw, 52px);
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--color-primary, #667eea) 10%, #fff);
+  font-size: 1.4rem;
+}
+
+.statContent h3 { margin: 0 0 .2rem 0; font-size: clamp(1.2rem, 3.5vw, 1.6rem); color: var(--color-dark, #0f172a); }
+.statContent p { margin: 0; color: var(--color-silver, #64748b); }
+
+.controlsSection {
+  background: #fff;
+  border: 1px solid var(--color-gray, #e5e7eb);
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm, 0 4px 12px rgba(0,0,0,.06));
+}
+
+.searchBar { position: relative; margin-bottom: .9rem; }
+.searchIcon { position: absolute; left: .9rem; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 1rem; }
+.searchInput {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: .75rem .9rem .75rem 2.5rem;
+  font-size: .95rem;
+  outline: none;
+}
+.searchInput:focus { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(102,126,234,.12); }
+
+.filters { display: flex; gap: .5rem; flex-wrap: wrap; }
+.filterBtn {
+  border: 1.5px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  border-radius: 10px;
+  padding: .55rem .95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.filterBtn:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
+.filterBtn.active { background: var(--color-secondary); color: #fff; border-color: transparent; }
+
+.tratamientosSection { margin-bottom: 1rem; }
+.sectionHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+.sectionTitle {
+  font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+  font-weight: 500;
+  color: var(--color-secondary);
+  display: flex; align-items: center; gap: .6rem;
+}
+.sectionTitle::before { content: ""; width: 4px; height: 1.3rem; border-radius: 2px; background: var(--color-secondary); }
+
+.tratamientoCard {
+  border: 1px solid var(--color-gray, #e5e7eb);
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm, 0 4px 12px rgba(0,0,0,.06));
+  margin-bottom: .8rem;
+}
+
+.tratamientoHeader {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: .8rem;
+  padding: .9rem 1rem;
+  cursor: pointer;
+}
+.tratamientoHeader:hover { background: #f8fafc; }
+
+.tratamientoTitle h3 { margin: 0 0 .2rem 0; font-size: clamp(1rem, 3.5vw, 1.2rem); color: var(--color-dark, #0f172a); }
+.tratamientoMeta { color: #64748b; font-size: clamp(.85rem, 3vw, 1rem); display: flex; gap: .5rem; flex-wrap: wrap; }
+
+.tratamientoActions { display: flex; align-items: center; gap: .6rem; }
+.progressIndicator { display: grid; place-items: center; }
+.progressCircle { position: relative; width: clamp(32px, 6vw, 40px); height: clamp(32px, 6vw, 40px); display: grid; place-items: center; }
+.progressCircle svg { width: 100%; height: 100%; }
+.progressCircle span { position: absolute; font-size: .7rem; font-weight: 700; color: #334155; }
+
+.expandIcon, .expandIconSmall { color: var(--color-primary, #667eea); font-size: .9rem; }
+
+.tratamientoDetails { border-top: 1px solid #eef2f7; padding: .9rem 1rem; }
+
+.tratamientoDocuments { display: grid; gap: .75rem; margin-bottom: 1rem; }
+.documentItem { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: .7rem .8rem; }
+
+.archivosSectionHeader { display: flex; align-items: center; justify-content: space-between; margin-bottom: .6rem; }
+
+.archivoCard { border: 1px solid #e5e7eb; border-radius: 12px; background: #fff; margin-bottom: .6rem; overflow: hidden; }
+.archivoHeader {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: .6rem;
+  padding: .75rem .9rem;
+  cursor: pointer;
+}
+.archivoHeader:hover { background: #f9fafb; }
+.archivoMeta { color: #64748b; font-size: .85rem; }
+
+.entradasList { padding: .4rem .9rem 1rem; display: grid; gap: .6rem; }
+
+.entradaCard { border: 1px solid #e5e7eb; border-radius: 10px; background: #f8fafc; padding: .75rem .8rem; }
+.entradaHeader { display: flex; align-items: center; justify-content: space-between; gap: .6rem; margin-bottom: .35rem; }
+.entradaHeader h6 { margin: 0; font-size: .95rem; color: #0f172a; }
+.entradaFecha { color: #64748b; font-size: .82rem; }
+.odontogramaBadge { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; border-radius: 999px; padding: .2rem .55rem; font-size: .75rem; font-weight: 700; }
+
+.entradaDescripcion { margin: .35rem 0; color: #334155; }
+.entradaNotas { background: #fff; border: 1px dashed #cbd5e1; border-radius: 8px; padding: .5rem .6rem; color: #334155; }
+.entradaAdjuntos { margin-top: .35rem; display: flex; flex-wrap: wrap; gap: .4rem; }
+.adjuntoTag { padding: .25rem .5rem; border-radius: 6px; background: #eef2ff; color: #3730a3; font-size: .8rem; border: 1px solid #e0e7ff; }
+
+.generalSection { margin-top: 1rem; }
+.generalSection .sectionTitle { margin-bottom: .6rem; }
+
+.modalOverlay { position: fixed; inset: 0; background: rgba(2,6,23,.55); display: grid; place-items: center; z-index: 1000; }
+.modal {
+  width: min(680px, 92vw);
+  max-height: 90dvh;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 30px 70px rgba(15,23,42,.35);
+  animation: modalIn .18s ease;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+@keyframes modalIn { from { transform: translateY(6px); opacity: .85; } to { transform: translateY(0); opacity: 1; } }
+
+.modalHeader { display: flex; align-items: center; justify-content: space-between; padding: .9rem 1rem; border-bottom: 1px solid #eef2f7; }
+.modalHeader h2 { margin: 0; font-size: 1.1rem; }
+.closeBtn { border: 0; background: transparent; font-size: 1rem; cursor: pointer; color: #64748b; }
+.closeBtn:hover { color: #0f172a; }
+
+.modalBody { padding: 1rem; display: grid; gap: .8rem; overflow: auto; -webkit-overflow-scrolling: touch; }
+.modalDescription { color: #475569; margin: 0 0 .4rem; }
+
+.formGroup { display: grid; gap: .35rem; }
+.formRow { display: grid; gap: .7rem; grid-template-columns: repeat(2,1fr); }
+
+.input,
+.textarea,
+select.input {
+  width: 100%;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: .65rem .75rem;
+  font-size: 1rem;
+  outline: none;
+  background: #fff;
+}
+.input:focus, .textarea:focus, select.input:focus { border-color: var(--color-primary, #667eea); box-shadow: 0 0 0 3px rgba(102,126,234,.12); }
+
+.checkboxLabel { display: flex; align-items: center; gap: .5rem; color: #334155; }
+
+.fileUpload { border: 1.5px dashed #cbd5e1; border-radius: 12px; padding: 1rem; background: #f8fafc; color: #475569; text-align: center; }
+.fileUpload input { display: block; margin: 0 auto .5rem auto; }
+
+.modalFooter { display: flex; justify-content: flex-end; gap: .5rem; padding: .9rem 1rem; border-top: 1px solid #eef2f7; }
+.cancelBtn { border: 1.5px solid #e2e8f0; border-radius: 10px; background: #fff; padding: .55rem .9rem; cursor: pointer; font-weight: 700; }
+.saveBtn {
+  border: 0; border-radius: 10px; padding: .6rem 1rem; cursor: pointer; font-weight: 700; color: #fff;
+  background: linear-gradient(135deg, var(--color-primary, #667eea), #764ba2);
+  box-shadow: 0 8px 20px rgba(102,126,234,.25);
+}
+
+@media (max-width: 960px) {
+  .header { flex-direction: column; align-items: flex-start; }
+  .formRow { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .wrap { padding: 1rem; }
+  .headerActions { width: 100%; }
+  .addBtn { width: 100%; }
+  .statCard { padding: .9rem; }
+  .tratamientoHeader { grid-template-columns: 1fr; }
+  .tratamientoActions { justify-content: flex-start; }
+  .archivoHeader { grid-template-columns: 1fr; }
+  .entradaCard { padding: .65rem .7rem; }
+  .modal { width: 100vw; height: 100dvh; max-height: none; border-radius: 0; }
+  .modalFooter { position: sticky; bottom: 0; background: #fff; }
+  .cancelBtn, .saveBtn { flex: 1; }
+}
+
+.generalSection .archivoHeader h5 { margin: 0 0 .2rem 0; font-size: clamp(1rem, 3.5vw, 1.2rem); line-height: 1.2; color: var(--color-dark, #0f172a); }
+.generalSection .archivoMeta { font-size: clamp(.9rem, 3.2vw, 1rem); }
+.generalSection .entradaHeader h6 { font-size: clamp(.95rem, 3.2vw, 1.05rem); line-height: 1.2; }
+.generalSection .entradaFecha { font-size: clamp(.85rem, 3vw, 1rem); }
+.generalSection .entradaDescripcion, .generalSection .entradaNotas { font-size: clamp(.9rem, 3.2vw, 1rem); line-height: 1.5; }
+.generalSection .adjuntoTag { font-size: clamp(.8rem, 2.8vw, .9rem); }
+.generalSection .addEntryBtn { font-size: clamp(.9rem, 3vw, .95rem); }

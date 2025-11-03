@@ -1,0 +1,275 @@
+.gameContainer {
+  --blue: var(--color-primary, #0ea5e9);
+  --blue-600: color-mix(in srgb, var(--blue) 92%, #000);
+  --blue-700: color-mix(in srgb, var(--blue) 80%, #000);
+  --blue-400: color-mix(in srgb, var(--blue) 92%, #fff);
+  --surface: var(--color-surface, #ffffff);
+  --text: var(--color-text, #0f172a);
+
+  max-width: 900px;
+  margin: 5rem auto;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-700) 100%);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.28);
+  color: #fff;
+}
+
+.gameHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+
+  h2 {
+    font-size: 2.4rem;
+    margin-bottom: 0.4rem;
+    text-shadow: 2px 2px 4px rgb(0 0 0 / 20%);
+  }
+
+  p {
+    font-size: 1.08rem;
+    opacity: 0.95;
+  }
+}
+
+.startScreen {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 2.5rem;
+  text-align: center;
+  color: var(--text);
+}
+
+.instructions {
+  margin-bottom: 1.6rem;
+
+  h3 {
+    color: var(--blue);
+    font-size: 1.6rem;
+    margin-bottom: 1.1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    text-align: left;
+    max-width: 520px;
+    margin: 0 auto;
+
+    li {
+      padding: 0.9rem 1rem;
+      margin-bottom: 0.7rem;
+      background: color-mix(in srgb, var(--blue) 8%, #f8fafc);
+      border-radius: 12px;
+      font-size: 1.05rem;
+      border-left: 4px solid var(--blue);
+      color: #0f172a;
+    }
+  }
+}
+
+.startButton,
+.playAgainButton {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-600) 100%);
+  color: #fff;
+  border: none;
+  padding: 1.1rem 2.4rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--blue) 40%, transparent);
+
+  &:hover { transform: translateY(-2px); }
+  &:active { transform: translateY(-1px); opacity: .95; }
+}
+
+.gameStats {
+  display: flex;
+  justify-content: space-around;
+  gap: 1rem;
+  margin-bottom: 1.2rem;
+  background: color-mix(in srgb, #ffffff 15%, transparent);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  padding: 1.2rem;
+}
+
+.stat {
+  text-align: center;
+
+  .statLabel {
+    display: block;
+    font-size: .9rem;
+    opacity: .9;
+    margin-bottom: .4rem;
+  }
+  .statValue {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 800;
+    text-shadow: 1px 2px 4px rgb(0 0 0 / 18%);
+  }
+}
+
+.gameArea {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 2rem;
+  min-height: 500px;
+  user-select: none;
+  touch-action: none;
+}
+
+.mouth {
+  position: relative;
+  width: 100%;
+  height: 450px;
+  background: linear-gradient(180deg, #ffb3ba 0%, #ffccd5 50%, #ffb3ba 100%);
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  box-shadow: inset 0 10px 30px rgb(0 0 0 / 10%);
+}
+
+.tooth {
+  position: absolute;
+  width: 50px;
+  height: 60px;
+  background: #8B7355;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  transform: translate(-50%, -50%);
+  transition: background-color .25s ease, transform .06s ease;
+  box-shadow: 0 4px 8px rgb(0 0 0 / 20%);
+  display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+
+  &.molar   { width: 55px; height: 65px; }
+  &.incisor { width: 45px; height: 70px; }
+  &.canine  { width: 48px; height: 75px; border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%; }
+
+  &:active  { transform: translate(-50%, -50%) scale(.98); }
+}
+
+.germs   { animation: wiggle .5s ease-in-out infinite; }
+.sparkle { animation: sparkle .6s ease-in-out; font-size: 1.5rem; }
+
+@keyframes wiggle { 0%,100%{transform:rotate(-5deg)} 50%{transform:rotate(5deg)} }
+@keyframes sparkle{
+  0%{ transform:scale(0) rotate(0); opacity:0 }
+  50%{ transform:scale(1.5) rotate(180deg); opacity:1 }
+  100%{ transform:scale(1) rotate(360deg); opacity:1 }
+}
+
+.toothbrush {
+  position: absolute;
+  font-size: 3rem;
+  pointer-events: none;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  animation: brush .22s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgb(0 0 0 / 30%));
+}
+
+@keyframes brush {
+  0%,100%{ transform: translate(-50%, -50%) rotate(-45deg); }
+  50%    { transform: translate(-50%, -50%) rotate(-35deg); }
+}
+
+.bonusStar {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: radial-gradient(circle at 30% 30%, #fff 0%, var(--blue-400) 45%, var(--blue) 100%);
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--blue) 40%, transparent);
+  display: grid; place-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: transform .15s ease;
+  color: #fff;
+
+  &:hover { transform: translate(-50%, -50%) scale(1.06); }
+  &:active{ transform: translate(-50%, -50%) scale(.96); }
+}
+
+.progressBar {
+  position: absolute;
+  bottom: 1rem; left: 2rem; right: 2rem;
+  height: 28px;
+  background: #e2e8f0;
+  border-radius: 14px; overflow: hidden;
+  border: 1px solid #dbe2ea;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue-400) 0%, var(--blue) 100%);
+  transition: width .25s ease;
+  border-radius: 14px;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--blue) 35%, transparent);
+}
+
+.gameOverScreen {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 2.4rem;
+  text-align: center;
+  color: var(--text);
+
+  h3 {
+    font-size: 2.2rem;
+    color: var(--blue);
+    margin-bottom: 1.6rem;
+  }
+}
+
+.finalStats {
+  margin-bottom: 1.4rem;
+
+  p {
+    font-size: 1.2rem;
+    margin: .8rem 0;
+
+    strong {
+      color: var(--blue);
+      font-size: 1.6rem;
+    }
+  }
+}
+
+.message {
+  margin: 1.6rem 0;
+  padding: 1.2rem;
+  border-radius: 12px;
+  font-size: 1.08rem;
+  font-weight: 600;
+
+  .perfect  { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color:#92400e; }
+  .great    { background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color:#065f46; }
+  .good     { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); color:#1e40af; }
+  .tryAgain { background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%); color:#991b1b; }
+}
+
+.tip {
+  margin-top: 1.2rem;
+  padding: 1rem 1.2rem;
+  background: color-mix(in srgb, #ffffff 15%, transparent);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  text-align: center;
+  font-size: 1.02rem;
+  border: 2px solid color-mix(in srgb, #ffffff 30%, transparent);
+}
+
+@media (max-width: 768px) {
+  .gameContainer { padding: 1rem; }
+  .gameHeader h2 { font-size: 1.9rem; }
+  .gameStats { flex-direction: column; gap: .8rem; }
+
+  .tooth { width: 40px; height: 50px;
+    &.molar   { width: 45px; height: 55px; }
+    &.incisor { width: 35px; height: 60px; }
+    &.canine  { width: 38px; height: 65px; }
+  }
+
+  .toothbrush { font-size: 2.2rem; }
+}

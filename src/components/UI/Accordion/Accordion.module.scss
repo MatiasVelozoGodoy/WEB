@@ -1,0 +1,46 @@
+.accordion {
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.header {
+  width: 100%;
+  padding: 1.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+
+  &:hover {
+    .question {
+      color: var(--color-secondary);
+    }
+  }
+}
+
+.question {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-dark);
+  text-align: left;
+  transition: var(--transition);
+}
+
+.icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--color-secondary);
+  flex-shrink: 0;
+}
+
+.content {
+  overflow: hidden;
+}
+
+.answer {
+  padding: 0 0 1.5rem 0;
+  color: var(--color-silver);
+  line-height: 1.6;
+}

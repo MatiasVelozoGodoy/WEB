@@ -1,0 +1,75 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 22, 40, 0.6);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+}
+
+.modal {
+  width: min(100%, 560px);
+  max-height: calc(100dvh - 2rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  overflow: auto;
+  background: var(--color-white);
+  border-radius: 16px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.6rem, 2.4vw, 1rem);
+  padding: clamp(1rem, 3.6vw, 1.25rem);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading);
+  color: var(--color-secondary);
+  font-size: clamp(1.05rem, 3.8vw, 1.25rem);
+}
+
+.body {
+  display: grid;
+  gap: clamp(0.5rem, 2.4vw, 0.85rem);
+}
+
+.footer {
+  display: flex;
+  gap: clamp(0.5rem, 2.4vw, 0.75rem);
+  margin-top: clamp(0.25rem, 1.6vw, 0.5rem);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.footer > * {
+  min-width: min(48%, 220px);
+}
+
+.close {
+  position: absolute;
+  top: clamp(8px, 3vw, 10px);
+  right: clamp(10px, 3vw, 12px);
+  border: none;
+  background: transparent;
+  font-size: clamp(1.2rem, 5vw, 1.5rem);
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-dark);
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+@media (min-width: 768px) {
+  .footer {
+    justify-content: flex-end;
+  }
+  .footer > * {
+    min-width: auto;
+  }
+}

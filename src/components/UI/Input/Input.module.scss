@@ -1,0 +1,85 @@
+.inputWrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.hasError {
+  margin-bottom: 0.25rem;
+}
+
+.label {
+  font-size: clamp(0.85rem, 0.8rem + 0.3vw, 0.95rem);
+  font-weight: 600;
+  color: var(--color-secondary);
+  line-height: 1.2;
+  display: inline-block;
+  margin-bottom: 0.4rem;
+}
+
+.required {
+  color: var(--color-error);
+  margin-left: 0.25rem;
+}
+
+.control {
+  position: relative;
+  width: 100%;
+}
+
+.leftIcon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-silver);
+  pointer-events: none;
+}
+
+.input {
+  @include m.input-base;
+  width: 100%;
+  font-size: clamp(0.95rem, 0.92rem + 0.3vw, 1rem);
+  padding: clamp(0.7rem, 0.6rem + 0.6vw, 0.875rem) clamp(0.9rem, 0.8rem + 0.8vw, 1rem);
+  min-height: 44px;
+  border-radius: var(--border-radius-sm);
+}
+
+.withIcon {
+  padding-left: clamp(2.2rem, 2rem + 1vw, 2.8rem);
+}
+
+.error {
+  border-color: var(--color-error);
+  outline-color: var(--color-error);
+}
+
+.errorText {
+  display: block;
+  color: var(--color-error);
+  font-size: clamp(0.8rem, 0.78rem + 0.25vw, 0.875rem);
+  line-height: 1.2;
+  font-weight: 500;
+  margin-top: 0.35rem;
+}
+
+@media (max-width: 480px) {
+  .inputWrapper {
+    margin-bottom: 0.6rem;
+  }
+
+  .label {
+    margin-bottom: 0.3rem;
+  }
+
+  .leftIcon {
+    left: 0.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input,
+  .errorText {
+    transition: none !important;
+  }
+}

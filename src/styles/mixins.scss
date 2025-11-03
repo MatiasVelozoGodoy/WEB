@@ -1,0 +1,122 @@
+
+$bp-sm: 480px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+$bp-xl: 1280px;
+
+@mixin button-base {
+  padding: 1.2rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: var(--border-radius-lg);
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: $bp-sm) {
+    width: 100%;
+    border-radius: calc(var(--border-radius-lg) * 0.9);
+  }
+}
+
+@mixin button-primary {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@mixin button-secondary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  text-shadow: 4px 4px 6px rgba(0, 0, 0, 0.3);
+
+  &:hover:not(:disabled) {
+    background-color: var(--color-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+
+    &:hover:not(:disabled) {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+}
+
+@media (pointer: coarse) {
+  .button {
+    &:hover:not(:disabled) {
+      transform: none;
+    }
+    &:active:not(:disabled) {
+      transform: translateY(-1px);
+    }
+  }
+}
+
+@media (min-width: $bp-md) {
+  .button {
+    min-height: 46px;
+  }
+}
+
+@media (min-width: $bp-lg) {
+  .button {
+    min-height: 48px;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin card-base {
+  background: var(--color-white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+
+  &:hover {
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-4px);
+  }
+}
+
+@mixin input-base {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  border: 2px solid var(--color-gray);
+  border-radius: var(--border-radius-sm);
+  font-size: 1rem;
+  transition: var(--transition);
+
+  &:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(121, 173, 220, 0.1);
+  }
+
+  &.error {
+    border-color: var(--color-error);
+  }
+}

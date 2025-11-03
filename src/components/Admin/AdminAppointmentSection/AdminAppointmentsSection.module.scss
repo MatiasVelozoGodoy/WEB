@@ -1,0 +1,182 @@
+.section {
+  background: var(--color-white);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--shadow-sm);
+}
+.section h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: stretch;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.filterCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1 1 calc(33.333% - 0.5rem);
+  border: 1px solid var(--color-gray);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: var(--color-white);
+  transition: var(--transition-fast);
+}
+.card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.06);
+  transform: translateY(-1px);
+}
+.cardIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-primary) 12%, #fff);
+  color: var(--color-primary);
+}
+.cardText {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.cardLabel {
+  font-size: 0.8rem;
+  color: var(--color-silver);
+}
+.cardValue {
+  font-weight: 600;
+  color: var(--color-secondary);
+  font-size: 0.95rem;
+}
+.rightActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+.rightActions > button {
+  width: max-content;
+  min-width: 190px;
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.tab {
+  border: 1px solid var(--color-gray);
+  background: var(--color-white);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+.tabActive {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 8%, #fff);
+}
+.inlineFields {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.switch {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+.grid2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.grid2 > * {
+  flex: 1 1 calc(50% - 0.375rem);
+}
+.grid3 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.grid3 > * {
+  flex: 1 1 calc(33.333% - 0.5rem);
+}
+@media (max-width: 768px) {
+  .grid3 > * {
+    flex-basis: 100%;
+  }
+}
+.detailGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+}
+.detailGrid > * {
+  flex: 1 1 calc(50% - 0.5rem);
+}
+.detailLabel {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-silver);
+}
+.detailValue {
+  display: block;
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+@media (max-width: 1024px) {
+  .toolbar {
+    flex-direction: column;
+  }
+  .rightActions {
+    align-items: stretch;
+  }
+  .rightActions > button {
+    width: 100%;
+    min-width: 0;
+  }
+}
+@media (max-width: 768px) {
+  .filterCards {
+    flex-direction: column;
+  }
+  .grid2 > *,
+  .detailGrid > * {
+    flex-basis: 100%;
+  }
+}
+@media (max-width: 480px) {
+  .section {
+    padding: 1.25rem;
+    border-radius: var(--border-radius-sm);
+  }
+  .section h2 {
+    font-size: 1.125rem;
+    margin-bottom: 1rem;
+  }
+}

@@ -1,0 +1,89 @@
+.wrapper {
+  min-height: calc(100vh - 120px);
+  display: grid;
+  place-items: center;
+  padding: 3rem 1.5rem;
+  background: var(--color-light-gray);
+}
+
+.card {
+  width: min(760px, 100%);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(14, 14, 14, 0.08);
+  padding: 2.25rem;
+  text-align: center;
+}
+
+.icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  display: grid;
+  place-items: center;
+  color: var(--color-secondary);
+  background: color-mix(in srgb, var(--color-secondary) 10%, #fff);
+  border: 1px solid color-mix(in srgb, var(--color-secondary) 30%, #fff);
+  border-radius: 14px;
+}
+
+.code {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  line-height: 1;
+  margin: 0.25rem 0 0.25rem;
+  color: var(--color-secondary);
+  letter-spacing: 1px;
+}
+
+.title {
+  margin: 0 0 0.5rem;
+  color: var(--color-dark);
+  font-size: 1.4rem;
+}
+
+.text {
+  margin: 0 auto 1.5rem;
+  max-width: 52ch;
+  color: var(--color-silver);
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+  transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+  text-decoration: none;
+}
+
+.primary {
+  background: var(--color-secondary);
+  color: var(--color-white);
+  border-color: var(--color-secondary);
+}
+.primary:hover { background: var(--color-hover); border-color: var(--color-hover); transform: translateY(-1px); }
+
+.success {
+  background: var(--color-success);
+  color: var(--color-white);
+  border-color: var(--color-success);
+}
+.success:hover { filter: brightness(.95); transform: translateY(-1px); }
+
+.ghost {
+  background: var(--color-white);
+  color: var(--color-secondary);
+  border: 1px solid var(--color-gray);
+}
+.ghost:hover { border-color: var(--color-secondary); transform: translateY(-1px); }

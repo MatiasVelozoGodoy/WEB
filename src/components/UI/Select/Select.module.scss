@@ -1,0 +1,107 @@
+
+.selectWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  position: relative;
+  width: 100%;
+}
+
+.label {
+  font-size: clamp(0.8rem, 0.74rem + 0.4vw, 0.9rem);
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.required {
+  color: #e74c3c;
+  margin-left: 0.25rem;
+}
+
+.selectContainer {
+  position: relative;
+  width: 100%;
+}
+
+.select {
+  --pad-y: clamp(0.65rem, 0.55rem + 0.8vw, 0.875rem);
+  --pad-x: clamp(0.9rem, 0.8rem + 1vw, 1.25rem);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--pad-y) var(--pad-x);
+  border: 2px solid #e0e0e0;
+  border-radius: 999px;
+  background: var(--color-white);
+  font-family: var(--font-body);
+  font-size: clamp(0.9rem, 0.84rem + 0.4vw, 1rem);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: var(--transition);
+  touch-action: manipulation;
+}
+
+.select:hover { border-color: var(--color-primary); }
+.open { border-color: var(--color-secondary); }
+.error { border-color: #e74c3c; }
+
+.placeholder { color: #999; }
+.selected { color: var(--color-dark); }
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-secondary);
+  transition: transform .2s ease;
+}
+.open .icon { transform: rotate(180deg); }
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  right: 0;
+  background: var(--color-white);
+  border: 2px solid #e0e0e0;
+  border-radius: 1rem;
+  max-height: min(260px, 50vh);
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: 0 8px 20px rgba(0,0,0,.12);
+  animation: slideDown .18s ease;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.option {
+  padding: clamp(0.8rem, 0.7rem + 0.6vw, 1rem) clamp(0.9rem, 0.8rem + 1vw, 1.25rem);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: clamp(0.95rem, 0.9rem + 0.3vw, 1rem);
+}
+
+.option:hover { background: #f5f5f5; }
+.active { background: var(--color-primary); color: var(--color-white); }
+
+.errorText {
+  font-size: clamp(0.72rem, 0.7rem + 0.2vw, 0.8rem);
+  color: #e74c3c;
+  margin-top: 0.25rem;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 480px) {
+  .dropdown {
+    border-radius: 0.75rem;
+    max-height: 48vh;
+  }
+  .option { min-height: 42px; }
+}
