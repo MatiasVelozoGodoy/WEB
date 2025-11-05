@@ -1,42 +1,56 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion";
 import { Edit, Trash2, Plus, X } from "lucide-react"
 import DataTable from "@/components/DataTable/DataTable"
 import Button from "@/components/UI/Button/Button"
-import { adminStock as initialStock } from "../../../data/dashboardData"
 import styles from "./AdminStockSection.module.scss"
-
-type StockRow = {
-  product: string
-  category: string
-  quantity: number
-  unit: string
-  price: number
-}
+import {
+  getStock,
+  createStock,
+  updateStock,
+  deleteStock,
+  StockItem,
+} from "@/services/stockService"
+import { useAuth } from "@/context/AuthContext"
 
 const AdminStockSection = () => {
-  const [stock, setStock] = useState<StockRow[]>(initialStock)
-  const [selectedRows, setSelectedRows] = useState<StockRow[]>([])
-  const [query, setQuery] = useState("")
+  const { isAdmin } = useAuth()
+  const [stock, setStock] = useState<StockItem[]>([])
+  const [loading, setLoading] = useState(true);
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editingIndex, setEditingIndex] = useState<number | null>(null)
-  const [form, setForm] = useState<StockRow>({
+  const [form, setForm] = useState<StockItem>({
+    id: "",
     product: "",
     category: "",
     quantity: 0,
     unit: "Unidad",
     price: 0,
   })
+  const [deleteTarget, setDeleteTarget] = useState<StockItem | null>(null)
 
-  const stockColumns = [
-    { key: "product", label: "Producto" },
-    { key: "category", label: "Categoría" },
-    { key: "quantity", label: "Cantidad" },
-    { key: "unit", label: "Unidad" },
-    { key: "price", label: "Precio" },
-  ]
+  useEffect(() => {
+    fetchStock()
+  }, [])
+
+  const fetchStock = async () => {
+    setLoading(true)
+    try {
+      const data = await getStock()
+      setStock(data)
+    } catch (err) {
+      console.error("Error al obtener stock:", err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const resetForm = () => {
+    setForm({ id: "", product: "", category: "", quantity: 0, unit: "Unidad", price: 0 })
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target
@@ -47,67 +61,130 @@ const AdminStockSection = () => {
   }
 
   const openAdd = () => {
-    setForm({ product: "", category: "", quantity: 0, unit: "Unidad", price: 0 })
+    resetForm()
     setIsAddOpen(true)
   }
 
-  const saveAdd = (e: React.FormEvent) => {
+  const saveAdd = async (e: React.FormEvent) => {
     e.preventDefault()
-    setStock((prev) => [form, ...prev])
-    setIsAddOpen(false)
+    if (!isAdmin) return alert("No autorizado")
+    try {
+      const result = await createStock(form)
+      if (result.isOK) {
+        await fetchStock()
+        setIsAddOpen(false)
+        resetForm()
+      } else {
+        alert(result.message || "Error al crear producto")
+      }
+    } catch (err) {
+      console.error("Error al crear stock:", err)
+    }
   }
 
-  const openEdit = (row: StockRow) => {
-    const idx = stock.indexOf(row)
+  const openEdit = (row: StockItem) => {
+    const idx = stock.findIndex((s) => s.id === row.id)
     if (idx === -1) return
     setEditingIndex(idx)
     setForm(row)
     setIsEditOpen(true)
   }
 
-  const saveEdit = (e: React.FormEvent) => {
+  const saveEdit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (editingIndex === null) return
-    const next = [...stock]
-    next[editingIndex] = form
-    setStock(next)
-    setIsEditOpen(false)
-    setEditingIndex(null)
+    if (!isAdmin || !form.id) return alert("No autorizado o ID inválido")
+    try {
+      const result = await updateStock(form.id, form)
+      if (result.isOK) {
+        await fetchStock()
+        setIsEditOpen(false)
+        setEditingIndex(null)
+        resetForm()
+      } else {
+        alert(result.message || "Error al actualizar producto")
+      }
+    } catch (err) {
+      console.error("Error al editar stock:", err)
+    }
   }
 
-  const removeRow = (row: StockRow) => {
-    const idx = stock.indexOf(row)
-    if (idx === -1) return
-    setStock((prev) => prev.filter((_, i) => i !== idx))
+  const confirmDelete = (row: StockItem) => {
+    setDeleteTarget(row)
+  }
+
+  const performDelete = async () => {
+    if (!deleteTarget || !isAdmin) return
+    try {
+      const result = await deleteStock(deleteTarget.id!)
+      if (result.isOK) {
+        await fetchStock()
+      } else {
+        alert(result.message || "Error al eliminar producto")
+      }
+    } catch (err) {
+      console.error("Error al eliminar stock:", err)
+    } finally {
+      setDeleteTarget(null)
+    }
+  }
+
+  const columns = [
+    { key: "product", label: "Producto" },
+    { key: "category", label: "Categoría" },
+    { key: "quantity", label: "Cantidad" },
+    { key: "unit", label: "Unidad" },
+    { key: "price", label: "Precio" },
+  ]
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <motion.div
+          className={styles.loader}
+          animate={{ rotate: 360 }}
+          transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+        />
+        <motion.p
+          className={styles.loadingText}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0, 1, 0] }}
+          transition={{ repeat: Infinity, duration: 1.5 }}
+        >
+          Cargando productos...
+        </motion.p>
+      </div>
+    );
   }
 
   return (
-    <section id="stock" className={styles.section}>
+    <section className={styles.section}>
       <div className={styles.headerRow}>
-           <div className={styles.searchWrap}>
-          <input
-            className={styles.searchInput}
-            placeholder="Buscar stock..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
+        <div className={styles.searchWrap}>
+          <input className={styles.searchInput} placeholder="Buscar stock..." onChange={() => {}} />
         </div>
-        <Button variant="primary" onClick={openAdd}>
-          <Plus size={18} />
-          Añadir Stock
-        </Button>
+        {isAdmin && (
+          <Button variant="primary" onClick={openAdd}>
+            <Plus size={18} />
+            Añadir Stock
+          </Button>
+        )}
       </div>
 
-      <DataTable
-        columns={stockColumns}
-        data={stock}
-        selectable
-        onSelectionChange={(rows) => setSelectedRows(rows as StockRow[])}
-        actions={[
-          { icon: <Edit />, label: "Editar", onClick: (row) => openEdit(row as StockRow) },
-          { icon: <Trash2 />, label: "Eliminar", onClick: (row) => removeRow(row as StockRow) },
-        ]}
-      />
+      {loading ? (
+        <div className={styles.loading}>Cargando stock...</div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={stock}
+          selectable
+          onSelectionChange={() => {}}
+          actions={[
+            { icon: <Edit />, label: "Editar", onClick: (row) => openEdit(row as StockItem) },
+            { icon: <Trash2 />, label: "Eliminar", onClick: (row) => confirmDelete(row as StockItem) },
+          ]}
+        />
+      )}
+
 
       {isAddOpen && (
         <>
@@ -115,33 +192,31 @@ const AdminStockSection = () => {
           <div className={styles.modal} role="dialog" aria-modal="true">
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>Añadir Stock</h3>
-              <button className={styles.iconButton} onClick={() => setIsAddOpen(false)} aria-label="Cerrar">
+              <button className={styles.iconButton} onClick={() => setIsAddOpen(false)}>
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={saveAdd} className={styles.modalBody}>
               <div className={styles.modalGrid}>
-                <label className={styles.field}>
-                  <span>Producto</span>
-                  <input name="product" value={form.product} onChange={handleChange} required />
-                </label>
-                <label className={styles.field}>
-                  <span>Categoría</span>
-                  <input name="category" value={form.category} onChange={handleChange} required />
-                </label>
+                {["product", "category", "unit"].map((field) => (
+                  <label className={styles.field} key={field}>
+                    <span>{field.charAt(0).toUpperCase() + field.slice(1)}</span>
+                    {field === "unit" ? (
+                      <select name="unit" value={(form as any)[field]} onChange={handleChange}>
+                        <option value="Unidad">Unidad</option>
+                        <option value="Caja">Caja</option>
+                        <option value="Pack">Pack</option>
+                        <option value="ml">ml</option>
+                        <option value="gr">gr</option>
+                      </select>
+                    ) : (
+                      <input name={field} value={(form as any)[field]} onChange={handleChange} required />
+                    )}
+                  </label>
+                ))}
                 <label className={styles.field}>
                   <span>Cantidad</span>
                   <input name="quantity" type="number" min={0} value={form.quantity} onChange={handleChange} required />
-                </label>
-                <label className={styles.field}>
-                  <span>Unidad</span>
-                  <select name="unit" value={form.unit} onChange={handleChange} required>
-                    <option value="Unidad">Unidad</option>
-                    <option value="Caja">Caja</option>
-                    <option value="Pack">Pack</option>
-                    <option value="ml">ml</option>
-                    <option value="gr">gr</option>
-                  </select>
                 </label>
                 <label className={styles.field}>
                   <span>Precio</span>
@@ -157,39 +232,38 @@ const AdminStockSection = () => {
         </>
       )}
 
+      {/* Modal Editar */}
       {isEditOpen && (
         <>
           <div className={styles.modalOverlay} onClick={() => setIsEditOpen(false)} />
           <div className={styles.modal} role="dialog" aria-modal="true">
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>Editar Stock</h3>
-              <button className={styles.iconButton} onClick={() => setIsEditOpen(false)} aria-label="Cerrar">
+              <button className={styles.iconButton} onClick={() => setIsEditOpen(false)}>
                 <X size={20} />
               </button>
             </div>
             <form onSubmit={saveEdit} className={styles.modalBody}>
               <div className={styles.modalGrid}>
-                <label className={styles.field}>
-                  <span>Producto</span>
-                  <input name="product" value={form.product} onChange={handleChange} required />
-                </label>
-                <label className={styles.field}>
-                  <span>Categoría</span>
-                  <input name="category" value={form.category} onChange={handleChange} required />
-                </label>
+                {["product", "category", "unit"].map((field) => (
+                  <label className={styles.field} key={field}>
+                    <span>{field.charAt(0).toUpperCase() + field.slice(1)}</span>
+                    {field === "unit" ? (
+                      <select name="unit" value={(form as any)[field]} onChange={handleChange}>
+                        <option value="Unidad">Unidad</option>
+                        <option value="Caja">Caja</option>
+                        <option value="Pack">Pack</option>
+                        <option value="ml">ml</option>
+                        <option value="gr">gr</option>
+                      </select>
+                    ) : (
+                      <input name={field} value={(form as any)[field]} onChange={handleChange} required />
+                    )}
+                  </label>
+                ))}
                 <label className={styles.field}>
                   <span>Cantidad</span>
                   <input name="quantity" type="number" min={0} value={form.quantity} onChange={handleChange} required />
-                </label>
-                <label className={styles.field}>
-                  <span>Unidad</span>
-                  <select name="unit" value={form.unit} onChange={handleChange} required>
-                    <option value="Unidad">Unidad</option>
-                    <option value="Caja">Caja</option>
-                    <option value="Pack">Pack</option>
-                    <option value="ml">ml</option>
-                    <option value="gr">gr</option>
-                  </select>
                 </label>
                 <label className={styles.field}>
                   <span>Precio</span>
@@ -201,6 +275,28 @@ const AdminStockSection = () => {
                 <Button type="submit" variant="primary">Guardar cambios</Button>
               </div>
             </form>
+          </div>
+        </>
+      )}
+
+      {/* Modal Eliminar */}
+      {deleteTarget && (
+        <>
+          <div className={styles.modalOverlay} onClick={() => setDeleteTarget(null)} />
+          <div className={styles.modalDelete} role="dialog" aria-modal="true">
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Eliminar Producto</h3>
+              <button className={styles.iconButton} onClick={() => setDeleteTarget(null)}>
+                <X size={20} />
+              </button>
+            </div>
+            <div className={styles.modalBody}>
+              <p>¿Seguro que quieres eliminar <strong>{deleteTarget.product}</strong>?</p>
+              <div className={styles.modalActions}>
+                <Button variant="secondary" onClick={() => setDeleteTarget(null)}>Cancelar</Button>
+                <Button variant="primary" onClick={performDelete}>Eliminar</Button>
+              </div>
+            </div>
           </div>
         </>
       )}
