@@ -280,16 +280,16 @@ const Register = () => {
                       value={field.value ?? ""}
                       onChange={field.onChange}
                       options={[
-                        { value: "jersal", label: "Jerárquicos Salud" },
-                        { value: "swiss", label: "Swiss Medical" },
-                        { value: "medife", label: "Medifé" },
-                        { value: "sancor", label: "SanCor Salud" },
-                        { value: "ospim", label: "OSPIM" },
-                        { value: "galeno", label: "Galeno" },
-                        { value: "issunne", label: "ISSUNNE" },
-                        { value: "ospjn", label: "OSPJN" },
-                        { value: "otro", label: "Otro" },
-                        { value: "ninguna", label: "Ninguna" },
+                        { value: "Jerárquicos Salud", label: "Jerárquicos Salud" },
+                        { value: "Swiss Medical", label: "Swiss Medical" },
+                        { value: "Medifé", label: "Medifé" },
+                        { value: "SanCor Salud", label: "SanCor Salud" },
+                        { value: "OSPIM", label: "OSPIM" },
+                        { value: "Galeno", label: "Galeno" },
+                        { value: "ISSUNNE", label: "ISSUNNE" },
+                        { value: "OSPJN", label: "OSPJN" },
+                        { value: "Otro", label: "Otro" },
+                        { value: "Ninguna", label: "Ninguna" },
                       ]}
                       error={fieldState.error?.message}
                       required

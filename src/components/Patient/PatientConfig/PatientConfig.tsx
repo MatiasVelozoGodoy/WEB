@@ -295,12 +295,12 @@ const PatientConfig = () => {
               value={form.insurance}
               onChange={(v: string) => onChange("insurance", v)}
               options={[
-                { value: "jerarquicos", label: "Jerárquicos Salud" },
-                { value: "swiss", label: "Swiss Medical" },
-                { value: "medife", label: "Medifé" },
-                { value: "sancor", label: "SanCor Salud" },
-                { value: "otro", label: "Otro" },
-                { value: "ninguna", label: "Ninguna" },
+                { value: "Jerárquicos Salud", label: "Jerárquicos Salud" },
+                { value: "Swiss Medical", label: "Swiss Medical" },
+                { value: "Medifé", label: "Medifé" },
+                { value: "SanCor Salud", label: "SanCor Salud" },
+                { value: "Otro", label: "Otro" },
+                { value: "Ninguna", label: "Ninguna" },
               ]}
             />
           </section>

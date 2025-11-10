@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 const GENDERS = ["masculino", "femenino", "otro"] as const
-const INSURANCES = ["galeno", "swiss", "medife", "sancor", "ospim", "ospjn", "galeno", "issunne", "otro", "ninguna"] as const
+const INSURANCES = ["Galeno", "Swiss Medical", "Medifé", "SanCor Salud", "OSPIM", "OSPJN", "ISSUNNE", "Otro", "Ninguna"] as const
 
 export const loginSchema = z.object({
   email: z

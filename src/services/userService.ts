@@ -13,4 +13,25 @@ export const getCurrentUser = async (authToken: string) => {
   }
 };
 
+export const getUsers = async (token: string) => {
+  const res = await axios.get(`${API_BASE_URL}/users`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+export const updateUser = async (id: string, data: any, token: string) => {
+  const res = await axios.put(`${API_BASE_URL}/users/${id}`, data, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
+export const deleteUser = async (id: string, token: string) => {
+  const res = await axios.put(`${API_BASE_URL}/users/delete/${id}`, {}, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data;
+};
+
 
