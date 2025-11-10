@@ -7,41 +7,27 @@ import { motion } from "framer-motion";
 import Input from "../../components/UI/Input/Input";
 import Textarea from "../../components/UI/Textarea/Textarea";
 import Button from "../../components/UI/Button/Button";
-import Accordion from "../../components/UI/Accordion/Accordion";
-import { useForm } from "../../hooks/useForm";
-import { validateEmail, validateRequired } from "../../utils/validation";
 import { contactInfo } from "../../data/contactInfo";
-import { faqs } from "../../data/faqs";
-import SuccessModal from "../../components/SuccessModal/SuccessModal";
-import checkAnimation from "../../assets/animations/success.json";
 import decor2 from "./../../assets/images/dentalDecor2.png";
-import decor from "./../../assets/images/dentalDecor.png";
 import hero from "./../../assets/images/contactHero.png";
 import styles from "./ContactPage.module.scss";
 import { Link } from "react-router-dom";
-
-type ContactFormKeys = "name" | "reason" | "email" | "phone" | "message";
-type ContactFormData = Record<ContactFormKeys, string>;
+import SuccessModal from "../../components/SuccessModal/SuccessModal";
+import checkAnimation from "../../assets/animations/success.json";
 
 const ContactPage = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    reason: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const validationRules: Partial<Record<ContactFormKeys, ((v: string) => boolean)[]>> = {
-    name: [validateRequired],
-    reason: [validateRequired],
-    email: [validateRequired, validateEmail],
-    phone: [],
-    message: [validateRequired],
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
-
-  const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit } =
-    useForm<ContactFormData>(
-      { name: "", reason: "", email: "", phone: "", message: "" },
-      validationRules,
-      async () => {
-        setShowSuccess(true);
-      }
-    );
 
   return (
     <div className={styles.contactPage}>
@@ -104,21 +90,25 @@ const ContactPage = () => {
           >
             <h2 className={styles.title}>ENVIANOS TU CONSULTA</h2>
 
-            <form onSubmit={handleSubmit} className={styles.form} noValidate>
+            <form
+              action="https://formsubmit.co/85337ca98ed6203fb78f596ecdb59848"
+              method="POST"
+              className={styles.form}
+              onSubmit={() => setShowSuccess(true)}
+            >
+              {/* Hidden inputs */}
+
+
               <div className={styles.row}>
                 <div className={styles.field}>
                   <div className={styles.fieldLabel}>Nombre Completo *</div>
                   <Input
                     type="text"
                     name="name"
-                    value={values.name}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors.name}
-                    touched={touched.name}
                     placeholder="Juan Pérez"
+                    value={formData.name}
+                    onChange={handleChange}
                     required
-                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -127,14 +117,10 @@ const ContactPage = () => {
                   <Input
                     type="text"
                     name="reason"
-                    value={values.reason}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors.reason}
-                    touched={touched.reason}
                     placeholder="Consulta brackets"
+                    value={formData.reason}
+                    onChange={handleChange}
                     required
-                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -145,14 +131,10 @@ const ContactPage = () => {
                   <Input
                     type="email"
                     name="email"
-                    value={values.email}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors.email}
-                    touched={touched.email}
                     placeholder="tucorreo@gmail.com"
+                    value={formData.email}
+                    onChange={handleChange}
                     required
-                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -161,13 +143,9 @@ const ContactPage = () => {
                   <Input
                     type="tel"
                     name="phone"
-                    value={values.phone}
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    error={errors.phone}
-                    touched={touched.phone}
                     placeholder="3794532535"
-                    disabled={isSubmitting}
+                    value={formData.phone}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
@@ -176,21 +154,21 @@ const ContactPage = () => {
                 <Textarea
                   label="Mensaje"
                   name="message"
-                  value={values.message}
-                  onChange={handleChange as unknown as React.ChangeEventHandler<HTMLTextAreaElement>}
-                  onBlur={handleBlur as unknown as React.FocusEventHandler<HTMLTextAreaElement>}
-                  error={errors.message}
-                  touched={touched.message}
                   placeholder="Escribí acá tu mensaje..."
+                  value={formData.message}
+                  onChange={handleChange}
                   rows={5}
                   required
-                  disabled={isSubmitting}
                 />
               </div>
 
-              <Button type="submit" variant="primary" disabled={isSubmitting}>
-                {isSubmitting ? "Enviando..." : "Enviar"}
+              <Button type="submit" variant="primary">
+                Enviar
               </Button>
+                <input type="hidden" name="_next" value="http://localhost:5173/contacto"></input>
+                <input type="hidden" name="_subject" value={formData.reason}></input>
+                <input type="hidden" name="_captcha" value="false"></input>
+                <input type="hidden" name="_template" value="table"></input>
             </form>
           </motion.div>
         </div>
@@ -205,7 +183,11 @@ const ContactPage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <img src="https://res.cloudinary.com/dcfkgepmp/image/upload/v1762121785/us-pic2_ewpzjv.jpg" alt="Consulta dental" className={styles.consultImage} />
+            <img
+              src="https://res.cloudinary.com/dcfkgepmp/image/upload/v1762121785/us-pic2_ewpzjv.jpg"
+              alt="Consulta dental"
+              className={styles.consultImage}
+            />
             <div className={styles.consultContent}>
               <h2 className={styles.consultTitle}>AGENDÁ TU CONSULTA</h2>
               <p className={styles.consultText}>
@@ -227,9 +209,7 @@ const ContactPage = () => {
           >
             <h2 className={styles.faqTitle}>PREGUNTAS FRECUENTES</h2>
             <div className={styles.faqList}>
-              {faqs.map((faq) => (
-                <Accordion key={faq.id} question={faq.question} answer={faq.answer} />
-              ))}
+              {/** Aquí puedes mapear tus FAQs si lo deseas */}
             </div>
             <img src={decor2} alt="Herramientas dentales" className={styles.faqImage} />
           </motion.div>
@@ -246,5 +226,10 @@ const ContactPage = () => {
     </div>
   );
 };
+
+<input type="hidden" name="_subject" value="hoooooooooooooola!"></input>;
+<input type="hidden" name="_captcha" value="false"></input>;
+<input type="hidden" name="_template" value="table"></input>;
+<input type="hidden" name="_next" value="http://localhost:5173/contacto"></input>
 
 export default ContactPage;
