@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight, CheckCircle } from "lucide-react";
@@ -9,6 +8,8 @@ import hero from "./../../assets/images/appointmentBG.jpg";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./Appointment.module.scss";
 
+import { createAppointment, combineDateTime } from "@/services/appointmentService";
+
 const Appointment = () => {
   const navigate = useNavigate();
   const { currentUser, isLoggedIn } = useAuth();
@@ -17,65 +18,68 @@ const Appointment = () => {
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [times, setTimes] = useState<string[]>([]);
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isLoggedIn) navigate("/login", { replace: true });
   }, [isLoggedIn]);
 
-  // Generador de horarios según el día
   useEffect(() => {
-    const day = selectedDate.getDay(); // 0=Dom, 1=Lun, ..., 6=Sab
-    let availableTimes: string[];
-
-    if (day === 1 || day === 3) {
-      // Martes o Jueves: desde las 14:00
-      availableTimes = ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"];
-    } else {
-      // Otros días: desde las 9:00
-      availableTimes = [
-        "09:00","09:30","10:00","10:30","11:00","11:30",
-        "12:00","12:30","13:00","13:30","14:00","14:30",
-        "15:00","15:30","16:00","16:30","17:00",
-      ];
-    }
-
+    const day = selectedDate.getDay();
+    const availableTimes =
+      day === 1 || day === 3
+        ? ["14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00"]
+        : ["09:00","09:30","10:00","10:30","11:00","11:30","12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30","16:00","16:30","17:00"];
     setTimes(availableTimes);
-    setSelectedTime(""); // resetear hora si cambia el día
+    setSelectedTime("");
   }, [selectedDate]);
 
-  const getDaysInMonth = (date: Date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    return { firstDay, daysInMonth };
+const handleSubmit = async () => {
+  if (!selectedTime || !currentUser) {
+    console.warn("⛔ No hay hora seleccionada o usuario no está definido:", { selectedTime, currentUser });
+    return;
+  }
+
+  const authToken = localStorage.getItem("authToken");
+  if (!authToken) {
+    console.warn("⚠️ No hay token de autenticación en localStorage");
+    navigate("/login");
+    return;
+  }
+
+  const datetimeISO = combineDateTime(selectedDate, selectedTime);
+
+  // 🔍 Muestra exactamente lo que se enviará
+  const payload = {
+    clientId: currentUser.id,
+    date: datetimeISO,
+    reason: "consulta",
+    state: "pendiente",
   };
 
-  const { firstDay, daysInMonth } = getDaysInMonth(selectedDate);
+  console.log("📤 Enviando turno al backend:", payload);
 
-  const handlePrevMonth = () => {
-    setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() - 1, 1));
-  };
+  setLoading(true);
+  try {
+    const response = await createAppointment(payload, authToken);
+    console.log("✅ Respuesta del backend:", response);
+    setShowModal(true);
+  } catch (err: any) {
+    console.error("❌ Error en la solicitud:", err);
 
-  const handleNextMonth = () => {
-    setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1));
-  };
-
-  const handleSubmit = () => {
-    if (!selectedTime) {
-      alert("Debes seleccionar una hora.");
-      return;
+    // Si Axios trae respuesta del backend, la mostramos también
+    if (err.response) {
+      console.error("📩 Respuesta del servidor:", err.response.data);
+      console.error("📊 Status:", err.response.status);
+    } else {
+      console.error("🚫 Error sin respuesta del servidor:", err.message);
     }
 
-    const storedAppointments = JSON.parse(localStorage.getItem("appointments") || "[]");
-    storedAppointments.push({
-      date: selectedDate.toISOString(),
-      time: selectedTime,
-    });
-    localStorage.setItem("appointments", JSON.stringify(storedAppointments));
-
-    setShowModal(true);
-  };
+    alert("Error al agendar el turno. Revisá la consola.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   const handleCloseModal = () => {
     setShowModal(false);
@@ -84,6 +88,9 @@ const Appointment = () => {
 
   const monthNames = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
   const dayNames = ["Lu","Ma","Mi","Ju","Vi","Sa","Do"];
+
+  const daysInMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth()+1, 0).getDate();
+  const firstDay = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1).getDay();
 
   return (
     <div className={styles.appointmentPage}>
@@ -94,25 +101,17 @@ const Appointment = () => {
           <div className={styles.leftPanel}>
             <div className={styles.calendar}>
               <div className={styles.calendarHeader}>
-                <button onClick={handlePrevMonth}><ChevronLeft size={20} /></button>
+                <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth()-1, 1))}><ChevronLeft size={20}/></button>
                 <h3>{monthNames[selectedDate.getMonth()]} {selectedDate.getFullYear()}</h3>
-                <button onClick={handleNextMonth}><ChevronRight size={20} /></button>
+                <button onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth()+1, 1))}><ChevronRight size={20}/></button>
               </div>
               <div className={styles.calendarGrid}>
-                {dayNames.map(day => <div key={day} className={styles.dayName}>{day}</div>)}
-                {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className={styles.emptyDay} />)}
-                {Array.from({ length: daysInMonth }).map((_, i) => {
-                  const day = i + 1;
+                {dayNames.map(d => <div key={d} className={styles.dayName}>{d}</div>)}
+                {Array.from({length: firstDay}).map((_,i)=><div key={`empty-${i}`} className={styles.emptyDay}/>)}
+                {Array.from({length: daysInMonth}).map((_,i)=>{
+                  const day = i+1;
                   const isSelected = day === selectedDate.getDate();
-                  return (
-                    <button
-                      key={day}
-                      className={`${styles.day} ${isSelected ? styles.selected : ""}`}
-                      onClick={() => setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day))}
-                    >
-                      {day}
-                    </button>
-                  );
+                  return <button key={day} className={`${styles.day} ${isSelected ? styles.selected : ""}`} onClick={()=>setSelectedDate(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), day))}>{day}</button>
                 })}
               </div>
             </div>
@@ -122,20 +121,12 @@ const Appointment = () => {
             <div className={styles.timeSelection}>
               <h3>Elegí una hora</h3>
               <div className={styles.timeList}>
-                {times.map(time => (
-                  <button
-                    key={time}
-                    className={`${styles.timeButton} ${selectedTime === time ? styles.selected : ""}`}
-                    onClick={() => setSelectedTime(time)}
-                  >
-                    {time}
-                  </button>
-                ))}
+                {times.map(t => <button key={t} className={`${styles.timeButton} ${selectedTime===t ? styles.selected : ""}`} onClick={()=>setSelectedTime(t)}>{t}</button>)}
               </div>
             </div>
 
             <div className={styles.bookButton}>
-              <Button variant="primary" onClick={handleSubmit}>AGENDAR</Button>
+              <Button variant="primary" onClick={handleSubmit} disabled={loading}>{loading ? "Agendando..." : "AGENDAR"}</Button>
             </div>
           </div>
         </div>
@@ -144,16 +135,10 @@ const Appointment = () => {
       {showModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.modalContent}>
-            <CheckCircle size={60} color="#4caf50" />
+            <CheckCircle size={60} color="#4caf50"/>
             <h2>¡Turno agendado!</h2>
-            <p>
-              Tu turno fue registrado para el <strong>{selectedDate.toLocaleDateString()}</strong> a las{" "}
-              <strong>{selectedTime}</strong>.  
-              <br />Revisa tu correo para más detalles.
-            </p>
-            <Button variant="primary" onClick={handleCloseModal}>
-              Ir a mi perfil
-            </Button>
+            <p>Tu turno fue registrado para <strong>{selectedDate.toLocaleDateString("es-AR", { timeZone:"America/Argentina/Buenos_Aires" })}</strong> a las <strong>{selectedTime}</strong>.</p>
+            <Button variant="primary" onClick={handleCloseModal}>Ir a mi perfil</Button>
           </div>
         </div>
       )}
