@@ -100,6 +100,7 @@ const login = async (email: string, password: string) => {
   const logout = async () => {
     localStorage.removeItem("user");
     localStorage.removeItem("authToken");
+    localStorage.removeItem("currentUser");
     setCurrentUser(null);
     setError(null);
     return { success: true };

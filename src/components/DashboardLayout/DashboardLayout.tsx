@@ -12,7 +12,7 @@ interface DashboardLayoutProps {
   userAvatar?: string;
 }
 
-const DashboardLayout = ({ children, userType, userName, userRole, userAvatar }: DashboardLayoutProps) => {
+const DashboardLayout = ({ children, userType, userName, userRole, userAvatar}: DashboardLayoutProps) => {
   const { pathname } = useLocation();
 
   const getTitle = () => {

@@ -66,7 +66,7 @@ const Footer = () => {
 
               {/*<li><Link to={path}>Reservar Turno</Link></li> */}
               <li>
-                <Link to="/tuno">Reservar Turno</Link>
+                <Link to="/turno">Reservar Turno</Link>
               </li>
               <li>
                 <Link to="/#obras-sociales">Obras Sociales</Link>

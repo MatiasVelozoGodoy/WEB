@@ -12,3 +12,5 @@ export const getCurrentUser = async (authToken: string) => {
     throw error;
   }
 };
+
+

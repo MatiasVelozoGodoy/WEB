@@ -19,7 +19,7 @@ const Appointment = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    if (!isLoggedIn) navigate("/auth/login", { replace: true });
+    if (!isLoggedIn) navigate("/login", { replace: true });
   }, [isLoggedIn]);
 
   // Generador de horarios según el día

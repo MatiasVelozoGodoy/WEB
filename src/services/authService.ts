@@ -16,24 +16,33 @@ export const loginUser = async (
   email: string,
   password: string
 ): Promise<LoginResponse> => {
-  const response: AxiosResponse<LoginResponse> = await axios.post(
-    `${API_BASE_URL}/auth/login`,
-    { email, password }
-  );
+  try {
+    const response: AxiosResponse<LoginResponse> = await axios.post(
+      `${API_BASE_URL}/auth/login`,
+      { email, password }
+    );
 
-  const { token, user } = response.data;
+    const { token, user } = response.data;
 
-  // ✅ Guardamos el token en localStorage para usarlo luego
-  if (token) {
-    localStorage.setItem("authToken", token);
+    // ✅ Guardamos el token en localStorage para usarlo luego
+    if (token) {
+      localStorage.setItem("authToken", token);
+    }
+
+    // ✅ Guardamos los datos del usuario actual (opcional)
+    if (user) {
+      localStorage.setItem("currentUser", JSON.stringify(user));
+    }
+
+    return { token, user };
+  } catch (error: any) {
+    // ✅ CAPTURAR EL ERROR Y EXTRAER EL MENSAJE ESPECÍFICO
+    if (error.response && error.response.data && error.response.data.message) {
+      throw new Error(error.response.data.message); // "Usuario y/o Contraseña incorrecta"
+    } else {
+      throw new Error('Error de conexión con el servidor');
+    }
   }
-
-  // ✅ Guardamos los datos del usuario actual (opcional)
-  if (user) {
-    localStorage.setItem("currentUser", JSON.stringify(user));
-  }
-
-  return { token, user };
 };
 
 export const registerUser = async (userData: RegisterData): Promise<any> => {

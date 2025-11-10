@@ -32,7 +32,7 @@ const Hero = () => {
             <Button
               variant="primary"
               size="large"
-              onClick={() => navigate("/turnos")}
+              onClick={() => navigate("/turno")}
             >
               RESERVAR TURNO
             </Button>
