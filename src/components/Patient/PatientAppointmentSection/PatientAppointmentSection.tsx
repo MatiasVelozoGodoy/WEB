@@ -1,29 +1,29 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
-import { Eye, X, Pencil, Ban, CheckCircle2, Clock3, XCircle, Filter as FilterIcon } from "lucide-react"
-import DashboardLayout from "@/components/DashboardLayout/DashboardLayout"
-import DataTable from "@/components/DataTable/DataTable"
-import { patientAppointments as seed, patientTreatment } from "../../../data/dashboardData"
-import styles from "./PatientAppointmentSection.module.scss"
-import Button from "@/components/UI/Button/Button"
+import { useEffect, useMemo, useState } from "react";
+import {
+  Eye,
+  X,
+  Ban,
+  CheckCircle2,
+  Clock3,
+  XCircle,
+} from "lucide-react";
+import DashboardLayout from "@/components/DashboardLayout/DashboardLayout";
+import DataTable from "@/components/DataTable/DataTable";
+import styles from "./PatientAppointmentSection.module.scss";
+import Button from "@/components/UI/Button/Button";
+import { getUserAppointments, cancelAppointment } from "@/services/appointmentService";
 
 type Row = {
-  id: string
-  date: string
-  time: string
-  reason: string
-  insurance: string 
-  payment: string
-  status: "Completado" | "Pendiente" | "Cancelado"
-  receipt?: string
-}
-
-type Filters = {
-  q: string
-  estado: "" | "Completado" | "Pendiente" | "Cancelado"
-  pago: "" | "Completo" | "Pendiente" | "Cancelado"
-}
+  id: string;
+  date: string;
+  time: string;
+  reason: string;
+  insurance?: string;
+  payment?: string;
+  status: "Completado" | "Pendiente" | "Cancelado";
+};
 
 const columns = [
   { key: "date", label: "Fecha" },
@@ -31,82 +31,107 @@ const columns = [
   { key: "reason", label: "Motivo" },
   { key: "payment", label: "Pago" },
   { key: "status", label: "Estado" },
-]
+];
 
 const PatientAppointments = () => {
-  const [rows, setRows] = useState<Row[]>((seed as any[]).map((r, i) => ({ id: r.id ?? String(i + 1), ...r })))
-  const [filters, setFilters] = useState<Filters>({ q: "", estado: "", pago: "" })
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-  const [showCancel, setShowCancel] = useState<{ open: boolean; ids: string[] }>({ open: false, ids: [] })
-  const [showFilters, setShowFilters] = useState(false)
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showCancel, setShowCancel] = useState<{ open: boolean; ids: string[] }>({ open: false, ids: [] });
+  const [viewRow, setViewRow] = useState<Row | null>(null);
 
-  const [viewRow, setViewRow] = useState<Row | null>(null)
-  const [editRow, setEditRow] = useState<Row | null>(null)
-  const [editDraft, setEditDraft] = useState<Partial<Row>>({})
+  // --- Fetch appointments from API ---
+  useEffect(() => {
+    const fetchAppointments = async () => {
+      setLoading(true);
+      try {
+        const token = localStorage.getItem("authToken");
+        if (!token) return;
 
+        const data = await getUserAppointments(token);
+
+        const formatted: Row[] = data.map((appt: any) => {
+          const dateObj = new Date(appt.date);
+          return {
+            id: appt.id,
+            date: dateObj.toLocaleDateString("es-AR"),
+            time: dateObj.toLocaleTimeString("es-AR", { hour: "2-digit", minute: "2-digit" }),
+            reason: appt.reason || "Consulta",
+            insurance: appt.insurance || "-",
+            payment: appt.payment || "Pendiente",
+            status:
+              appt.state === "pendiente"
+                ? "Pendiente"
+                : appt.state === "completado"
+                ? "Completado"
+                : "Cancelado",
+          };
+        });
+
+        setRows(formatted);
+      } catch (err) {
+        console.error("Error cargando turnos:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
+  }, []);
+
+  // --- Cancel logic ---
+  const handleCancel = async (ids: string[]) => {
+    const token = localStorage.getItem("authToken");
+    if (!token) return;
+
+    try {
+      for (const id of ids) {
+        await cancelAppointment(id, token);
+      }
+
+      // Actualiza la UI local
+      setRows((prev) =>
+        prev.map((r) =>
+          ids.includes(r.id) ? { ...r, status: "Cancelado" } : r
+        )
+      );
+
+      setSelectedIds([]);
+      setShowCancel({ open: false, ids: [] });
+    } catch (err) {
+      console.error("Error cancelando turnos:", err);
+    }
+  };
+
+  // --- Stats ---
   const stats = useMemo(() => {
-    const completed = rows.filter((a) => a.status === "Completado").length
-    const pending = rows.filter((a) => a.status === "Pendiente").length
-    const cancelled = rows.filter((a) => a.status === "Cancelado").length
-    return { completed, pending, cancelled }
-  }, [rows])
-
-  const filteredData = useMemo(() => {
-    const q = filters.q.trim().toLowerCase()
-    return rows.filter((r) => {
-      const matchQ =
-        !q ||
-        r.date.toLowerCase().includes(q) ||
-        r.time.toLowerCase().includes(q) ||
-        r.reason.toLowerCase().includes(q) ||
-        r.payment.toLowerCase().includes(q) ||
-        r.status.toLowerCase().includes(q)
-      const matchE = !filters.estado || r.status === filters.estado
-      const matchP = !filters.pago || r.payment === filters.pago
-      return matchQ && matchE && matchP
-    })
-  }, [rows, filters])
+    const completed = rows.filter((a) => a.status === "Completado").length;
+    const pending = rows.filter((a) => a.status === "Pendiente").length;
+    const cancelled = rows.filter((a) => a.status === "Cancelado").length;
+    return { completed, pending, cancelled };
+  }, [rows]);
 
   const openCancelSelected = () => {
-    if (selectedIds.length === 0) return
-    setShowCancel({ open: true, ids: selectedIds })
-  }
-  const openCancelSingle = (id: string) => setShowCancel({ open: true, ids: [id] })
-  const confirmCancel = (reason: string) => {
-    void reason
-    setRows((prev) => prev.map((r) => (showCancel.ids.includes(r.id) ? { ...r, status: "Cancelado" } : r)))
-    setSelectedIds([])
-    setShowCancel({ open: false, ids: [] })
-  }
-
-  const openEdit = (row: Row) => {
-    setEditRow(row)
-    setEditDraft({ ...row })
-  }
-  const saveEdit = () => {
-    if (!editRow) return
-    setRows((prev) => prev.map((r) => (r.id === editRow.id ? { ...(r as Row), ...(editDraft as Row) } : r)))
-    setEditRow(null)
-    setEditDraft({})
-  }
+    if (selectedIds.length === 0) return;
+    setShowCancel({ open: true, ids: selectedIds });
+  };
 
   return (
-    <DashboardLayout userType="cliente" userRole="patient" userName={patientTreatment.patientName ?? "Francisco"}>
+    <DashboardLayout userType="cliente" userRole="cliente" userName="Paciente">
       <div className={styles.page}>
+        {/* --- Header --- */}
         <div className={styles.headerRow}>
-        
           <button
             className={`${styles.cancelBulkBtn} ${selectedIds.length === 0 ? styles.disabled : ""}`}
             onClick={openCancelSelected}
             disabled={selectedIds.length === 0}
-            type="button"
-            title={selectedIds.length === 0 ? "Selecciona uno o más turnos" : "Cancelar turno(s)"}
           >
             <Ban size={20} />
             <span>Cancelar Turno</span>
           </button>
         </div>
 
+        {/* --- Summary cards --- */}
         <div className={styles.summaryRow}>
           <div className={styles.summaryCard}>
             <CheckCircle2 size={26} />
@@ -125,21 +150,22 @@ const PatientAppointments = () => {
           </div>
         </div>
 
-      
+        {/* --- Table --- */}
         <div className={styles.tableCard}>
           <DataTable
             columns={columns}
-            data={filteredData}
+            data={rows}
             selectable
+            loading={loading}
             onSelectionChange={(ids: string[]) => setSelectedIds(ids)}
             actions={[
               { icon: <Eye />, label: "Ver", onClick: (row: Row) => setViewRow(row) },
-              { icon: <Pencil />, label: "Editar", onClick: (row: Row) => openEdit(row) },
-              { icon: <X />, label: "Cancelar", onClick: (row: Row) => openCancelSingle(row.id) },
+              { icon: <X />, label: "Cancelar", onClick: (row: Row) => setShowCancel({ open: true, ids: [row.id] }) },
             ]}
           />
         </div>
 
+        {/* --- Modal ver detalle --- */}
         {viewRow && (
           <>
             <div className={styles.modalOverlay} onClick={() => setViewRow(null)} />
@@ -147,106 +173,44 @@ const PatientAppointments = () => {
               <div className={styles.modal}>
                 <div className={styles.modalHead}>
                   <h4>Detalle del Turno</h4>
-                  <button className={styles.iconBtn} onClick={() => setViewRow(null)} aria-label="Cerrar">✕</button>
+                  <button className={styles.iconBtn} onClick={() => setViewRow(null)}>✕</button>
                 </div>
                 <div className={styles.modalBody}>
-                  <div className={styles.field}><label>Fecha</label><div className={styles.note}>{viewRow.date}</div></div>
-                  <div className={styles.field}><label>Hora</label><div className={styles.note}>{viewRow.time}</div></div>
-                  <div className={styles.field}><label>Motivo</label><div className={styles.note}>{viewRow.reason}</div></div>
-                  <div className={styles.field}><label>Pago</label><div className={styles.note}>{viewRow.payment}</div></div>
-                  <div className={styles.field}><label>Estado</label><div className={styles.note}>{viewRow.status}</div></div>
+                  <div className={styles.field}><label>Fecha</label><div>{viewRow.date}</div></div>
+                  <div className={styles.field}><label>Hora</label><div>{viewRow.time}</div></div>
+                  <div className={styles.field}><label>Motivo</label><div>{viewRow.reason}</div></div>
+                  <div className={styles.field}><label>Seguro</label><div>{viewRow.insurance}</div></div>
+                  <div className={styles.field}><label>Pago</label><div>{viewRow.payment}</div></div>
+                  <div className={styles.field}><label>Estado</label><div>{viewRow.status}</div></div>
                 </div>
                 <div className={styles.modalFoot}>
-                  <Button variant="secondary" size="small" onClick={() => setViewRow(null)}>Cerrar</Button>
+                  <Button onClick={() => setViewRow(null)}>Cerrar</Button>
                 </div>
               </div>
             </div>
           </>
         )}
 
-        {/* EDIT MODAL */}
-        {editRow && (
-          <>
-            <div className={styles.modalOverlay} onClick={() => setEditRow(null)} />
-            <div className={styles.modalWrap}>
-              <div className={styles.modal}>
-                <div className={styles.modalHead}>
-                  <h4>Editar Turno</h4>
-                  <button className={styles.iconBtn} onClick={() => setEditRow(null)} aria-label="Cerrar">✕</button>
-                </div>
-                <div className={styles.modalBody}>
-                  <div className={styles.field}>
-                    <label>Fecha</label>
-                    <input
-                      type="text"
-                      value={editDraft.date ?? ""}
-                      onChange={(e) => setEditDraft((d) => ({ ...d, date: e.target.value }))}
-                      placeholder="dd/mm/aaaa"
-                    />
-                  </div>
-                  <div className={styles.field}>
-                    <label>Hora</label>
-                    <input
-                      type="text"
-                      value={editDraft.time ?? ""}
-                      onChange={(e) => setEditDraft((d) => ({ ...d, time: e.target.value }))}
-                      placeholder="hh:mm"
-                    />
-                  </div>
-                  <div className={styles.field}>
-                    <label>Motivo</label>
-                    <input
-                      type="text"
-                      value={editDraft.reason ?? ""}
-                      onChange={(e) => setEditDraft((d) => ({ ...d, reason: e.target.value }))}
-                    />
-                  </div>
-                </div>
-                <div className={styles.modalFoot}>
-                  <Button variant="primary" size="small" onClick={() => setEditRow(null)} type="button">
-                    Cancelar
-                  </Button>
-                  <Button variant="secondary" size="small" onClick={saveEdit} type="button">
-                    Guardar cambios
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </>
-        )}
-
+        {/* --- Modal cancelar --- */}
         {showCancel.open && (
           <>
-            <div className={styles.modalOverlay} onClick={() => setShowCancel({ open: false, ids: [] })} />
+            <div
+              className={styles.modalOverlay}
+              onClick={() => setShowCancel({ open: false, ids: [] })}
+            />
             <div className={styles.modalWrap}>
               <div className={styles.modal}>
                 <div className={styles.modalHead}>
                   <h4>Cancelar turno{showCancel.ids.length > 1 ? "s" : ""}</h4>
-                <button className={styles.iconBtn}  onClick={() => setShowCancel({ open: false, ids: [] })} aria-label="Cerrar">✕</button>
                 </div>
-                
                 <div className={styles.modalBody}>
-                  <div className={styles.field}>
-                    <label>Motivo de cancelación</label>
-                    <input id="reasonCancel" placeholder="(opcional)" />
-                  </div>
                   <div className={styles.note}>
                     Se marcarán como <strong>Cancelado</strong> {showCancel.ids.length} turno(s).
                   </div>
                 </div>
                 <div className={styles.modalFoot}>
-                  <Button  variant="primary" onClick={() => setShowCancel({ open: false, ids: [] })} type="button">
-                    Volver
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={() =>
-                      confirmCancel((document.getElementById("reasonCancel") as HTMLInputElement | null)?.value ?? "")
-                    }
-                    type="button"
-                  >
-                    Confirmar cancelación
-                  </Button>
+                  <Button onClick={() => setShowCancel({ open: false, ids: [] })}>Volver</Button>
+                  <Button onClick={() => handleCancel(showCancel.ids)}>Confirmar cancelación</Button>
                 </div>
               </div>
             </div>
@@ -254,7 +218,7 @@ const PatientAppointments = () => {
         )}
       </div>
     </DashboardLayout>
-  )
-}
+  );
+};
 
-export default PatientAppointments
+export default PatientAppointments;
